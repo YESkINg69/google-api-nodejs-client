@@ -7821,7 +7821,7 @@ export namespace networksecurity_v1beta1 {
   export interface Params$Resource$Projects$Locations$Firewallendpointassociations$Create
     extends StandardParameters {
     /**
-     * Required. Id of the requesting object. If auto-generating Id server-side, remove this field and firewall_endpoint_association_id from the method_signature of Create RPC.
+     * Optional. Id of the requesting object. If auto-generating Id server-side, remove this field and firewall_endpoint_association_id from the method_signature of Create RPC.
      */
     firewallEndpointAssociationId?: string;
     /**
