@@ -4351,19 +4351,6 @@ export namespace dialogflow_v2beta1 {
     acceptsDtmfInput?: boolean | null;
   }
   /**
-   * A customer-managed encryption key specification that can be applied to all created resources (e.g. Conversation).
-   */
-  export interface Schema$GoogleCloudDialogflowV2beta1EncryptionSpec {
-    /**
-     * Required. The name of customer-managed encryption key that is used to secure a resource and its sub-resources. If empty, the resource is secured by the default Google encryption key. Only the key in the same location as this resource is allowed to be used for encryption. Format: `projects/{project\}/locations/{location\}/keyRings/{keyRing\}/cryptoKeys/{key\}`
-     */
-    kmsKey?: string | null;
-    /**
-     * Immutable. The resource name of the encryption key specification resource. Format: projects/{project\}/locations/{location\}/encryptionSpec
-     */
-    name?: string | null;
-  }
-  /**
    * Each intent parameter has a type, called the entity type, which dictates exactly how data from an end-user expression is extracted. Dialogflow provides predefined system entities that can match many common types of data. For example, there are system entities for matching dates, times, colors, email addresses, and so on. You can also create your own custom entities for matching custom data. For example, you could define a vegetable entity that can match the types of vegetables available for purchase with a grocery store agent. For more information, see the [Entity guide](https://cloud.google.com/dialogflow/docs/entities-overview).
    */
   export interface Schema$GoogleCloudDialogflowV2beta1EntityType {
@@ -4838,6 +4825,10 @@ export namespace dialogflow_v2beta1 {
      * Maximum number of results to return. Currently, if unset, defaults to 10. And the max number is 20.
      */
     maxResults?: number | null;
+    /**
+     * Optional. The customized sections chosen to return when requesting a summary of a conversation.
+     */
+    sections?: Schema$GoogleCloudDialogflowV2beta1HumanAgentAssistantConfigSuggestionQueryConfigSections;
   }
   /**
    * Settings that determine how to filter recent conversation context when generating suggestions.
@@ -4895,6 +4886,15 @@ export namespace dialogflow_v2beta1 {
      * Required. Knowledge bases to query. Format: `projects//locations//knowledgeBases/`. Currently, only one knowledge base is supported.
      */
     knowledgeBases?: string[] | null;
+  }
+  /**
+   * Custom sections to return when requesting a summary of a conversation. This is only supported when `baseline_model_version` == '2.0'. Supported features: CONVERSATION_SUMMARIZATION, CONVERSATION_SUMMARIZATION_VOICE.
+   */
+  export interface Schema$GoogleCloudDialogflowV2beta1HumanAgentAssistantConfigSuggestionQueryConfigSections {
+    /**
+     * The selected sections chosen to return when requesting a summary of a conversation. A duplicate selected section will be treated as a single selected section. If section types are not provided, the default will be {SITUATION, ACTION, RESULT\}.
+     */
+    sectionTypes?: string[] | null;
   }
   /**
    * Settings of suggestion trigger.
@@ -5024,24 +5024,6 @@ export namespace dialogflow_v2beta1 {
      * Required. The MIME type of the document.
      */
     mimeType?: string | null;
-  }
-  /**
-   * Metadata for initializing a location-level encryption specification.
-   */
-  export interface Schema$GoogleCloudDialogflowV2beta1InitializeEncryptionSpecMetadata {
-    /**
-     * Output only. The original request for initialization.
-     */
-    request?: Schema$GoogleCloudDialogflowV2beta1InitializeEncryptionSpecRequest;
-  }
-  /**
-   * The request to initialize a location-level encryption specification.
-   */
-  export interface Schema$GoogleCloudDialogflowV2beta1InitializeEncryptionSpecRequest {
-    /**
-     * Required. The encryption spec used for CMEK encryption. It is required that the kms key is in the same region as the endpoint. The same key will be used for all provisioned resources, if encryption is available. If the kms_key_name is left empty, no encryption will be enforced.
-     */
-    encryptionSpec?: Schema$GoogleCloudDialogflowV2beta1EncryptionSpec;
   }
   /**
    * Instructs the speech recognizer on how to process the audio content.
@@ -7571,19 +7553,6 @@ export namespace dialogflow_v2beta1 {
     createTime?: string | null;
   }
   /**
-   * A customer-managed encryption key specification that can be applied to all created resources (e.g. Conversation).
-   */
-  export interface Schema$GoogleCloudDialogflowV2EncryptionSpec {
-    /**
-     * Required. The name of customer-managed encryption key that is used to secure a resource and its sub-resources. If empty, the resource is secured by the default Google encryption key. Only the key in the same location as this resource is allowed to be used for encryption. Format: `projects/{project\}/locations/{location\}/keyRings/{keyRing\}/cryptoKeys/{key\}`
-     */
-    kmsKey?: string | null;
-    /**
-     * Immutable. The resource name of the encryption key specification resource. Format: projects/{project\}/locations/{location\}/encryptionSpec
-     */
-    name?: string | null;
-  }
-  /**
    * Each intent parameter has a type, called the entity type, which dictates exactly how data from an end-user expression is extracted. Dialogflow provides predefined system entities that can match many common types of data. For example, there are system entities for matching dates, times, colors, email addresses, and so on. You can also create your own custom entities for matching custom data. For example, you could define a vegetable entity that can match the types of vegetables available for purchase with a grocery store agent. For more information, see the [Entity guide](https://cloud.google.com/dialogflow/docs/entities-overview).
    */
   export interface Schema$GoogleCloudDialogflowV2EntityType {
@@ -7757,24 +7726,6 @@ export namespace dialogflow_v2beta1 {
      * Includes details about skipped documents or any other warnings.
      */
     warnings?: Schema$GoogleRpcStatus[];
-  }
-  /**
-   * Metadata for initializing a location-level encryption specification.
-   */
-  export interface Schema$GoogleCloudDialogflowV2InitializeEncryptionSpecMetadata {
-    /**
-     * Output only. The original request for initialization.
-     */
-    request?: Schema$GoogleCloudDialogflowV2InitializeEncryptionSpecRequest;
-  }
-  /**
-   * The request to initialize a location-level encryption specification.
-   */
-  export interface Schema$GoogleCloudDialogflowV2InitializeEncryptionSpecRequest {
-    /**
-     * Required. The encryption spec used for CMEK encryption. It is required that the kms key is in the same region as the endpoint. The same key will be used for all provisioned resources, if encryption is available. If the kms_key_name is left empty, no encryption will be enforced.
-     */
-    encryptionSpec?: Schema$GoogleCloudDialogflowV2EncryptionSpec;
   }
   /**
    * InputDataset used to create model or do evaluation. NextID:5
