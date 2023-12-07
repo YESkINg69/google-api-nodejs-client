@@ -159,6 +159,10 @@ export namespace file_v1 {
     /**
      * Output only. Reserved for future use.
      */
+    satisfiesPzi?: boolean | null;
+    /**
+     * Output only. Reserved for future use.
+     */
     satisfiesPzs?: boolean | null;
     /**
      * Name of the file share in the source Filestore instance that the backup is created from.
@@ -245,7 +249,7 @@ export namespace file_v1 {
      */
     capacityGb?: string | null;
     /**
-     * The name of the file share (must be 16 characters or less).
+     * Required. The name of the file share. Must use 1-16 characters for the basic service tier and 1-63 characters for all other service tiers. Must use lowercase letters, numbers, or underscores `[a-z0-9_]`. Must start with a letter. Immutable.
      */
     name?: string | null;
     /**
@@ -498,6 +502,10 @@ export namespace file_v1 {
      * VPC networks to which the instance is connected. For this version, only a single network is supported.
      */
     networks?: Schema$NetworkConfig[];
+    /**
+     * Output only. Reserved for future use.
+     */
+    satisfiesPzi?: boolean | null;
     /**
      * Output only. Reserved for future use.
      */
@@ -789,7 +797,7 @@ export namespace file_v1 {
    */
   export interface Schema$RevertInstanceRequest {
     /**
-     * Required. The snapshot resource ID, in the format 'my-snapshot', where the specified ID is the {snapshot_id\} of the fully qualified name like projects/{project_id\}/locations/{location_id\}/instances/{instance_id\}/snapshots/{snapshot_id\}
+     * Required. The snapshot resource ID, in the format 'my-snapshot', where the specified ID is the {snapshot_id\} of the fully qualified name like `projects/{project_id\}/locations/{location_id\}/instances/{instance_id\}/snapshots/{snapshot_id\}`
      */
     targetSnapshotId?: string | null;
   }
@@ -2342,7 +2350,7 @@ export namespace file_v1 {
   export interface Params$Resource$Projects$Locations$Instances$Revert
     extends StandardParameters {
     /**
-     * Required. projects/{project_id\}/locations/{location_id\}/instances/{instance_id\}. The resource name of the instance, in the format
+     * Required. `projects/{project_id\}/locations/{location_id\}/instances/{instance_id\}`. The resource name of the instance, in the format
      */
     name?: string;
 

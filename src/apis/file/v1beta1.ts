@@ -159,6 +159,10 @@ export namespace file_v1beta1 {
     /**
      * Output only. Reserved for future use.
      */
+    satisfiesPzi?: boolean | null;
+    /**
+     * Output only. Reserved for future use.
+     */
     satisfiesPzs?: boolean | null;
     /**
      * Name of the file share in the source Filestore instance that the backup is created from.
@@ -254,7 +258,7 @@ export namespace file_v1beta1 {
      */
     capacityGb?: string | null;
     /**
-     * The name of the file share (must be 32 characters or less for Enterprise and High Scale SSD tiers and 16 characters or less for all other tiers).
+     * Required. The name of the file share. Must use 1-16 characters for the basic service tier and 1-63 characters for all other service tiers. Must use lowercase letters, numbers, or underscores [a-z0-9_]. Must start with a letter. Immutable.
      */
     name?: string | null;
     /**
@@ -535,6 +539,10 @@ export namespace file_v1beta1 {
      * Immutable. The protocol indicates the access protocol for all shares in the instance. This field is immutable and it cannot be changed after the instance has been created. Default value: `NFS_V3`.
      */
     protocol?: string | null;
+    /**
+     * Output only. Reserved for future use.
+     */
+    satisfiesPzi?: boolean | null;
     /**
      * Output only. Reserved for future use.
      */
