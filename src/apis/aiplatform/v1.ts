@@ -878,6 +878,19 @@ export namespace aiplatform_v1 {
     inputUri?: string | null;
   }
   /**
+   * Content blob.
+   */
+  export interface Schema$GoogleCloudAiplatformV1Blob {
+    /**
+     * Required. Data.
+     */
+    data?: string | null;
+    /**
+     * Required. Mime type of the data.
+     */
+    mimeType?: string | null;
+  }
+  /**
    * Config for blur baseline. When enabled, a linear path from the maximally blurred image to the input image is created. Using a blurred baseline instead of zero (black image) is motivated by the BlurIG approach explained here: https://arxiv.org/abs/2004.03383
    */
   export interface Schema$GoogleCloudAiplatformV1BlurBaselineConfig {
@@ -1040,6 +1053,19 @@ export namespace aiplatform_v1 {
     imageUri?: string | null;
   }
   /**
+   * A single turn in a conversation with the model.
+   */
+  export interface Schema$GoogleCloudAiplatformV1Content {
+    /**
+     * Required. Ordered parts that make up a message. Parts may have different MIME types.
+     */
+    parts?: Schema$GoogleCloudAiplatformV1Part[];
+    /**
+     * Optional. The role in a conversation associated with this content. Set it only if a content represents a turn in a conversations, otherwise no need to set role. Possible values: user, model.
+     */
+    role?: string | null;
+  }
+  /**
    * Instance of a general context.
    */
   export interface Schema$GoogleCloudAiplatformV1Context {
@@ -1136,9 +1162,17 @@ export namespace aiplatform_v1 {
    */
   export interface Schema$GoogleCloudAiplatformV1CountTokensRequest {
     /**
+     * Required. Input content.
+     */
+    contents?: Schema$GoogleCloudAiplatformV1Content[];
+    /**
      * Required. The instances that are the input to token counting call. Schema is identical to the prediction schema of the underlying model.
      */
     instances?: any[] | null;
+    /**
+     * Required. The name of the publisher model requested to serve the prediction. Format: `projects/{project\}/locations/{location\}/publishers/x/models/x`
+     */
+    model?: string | null;
   }
   /**
    * Response message for PredictionService.CountTokens.
@@ -1934,6 +1968,10 @@ export namespace aiplatform_v1 {
      */
     deployedIndexId?: string | null;
     /**
+     * Output only. The display name of the DeployedIndex.
+     */
+    displayName?: string | null;
+    /**
      * Immutable. A resource name of the IndexEndpoint.
      */
     indexEndpoint?: string | null;
@@ -1990,6 +2028,10 @@ export namespace aiplatform_v1 {
      * The service account that the DeployedModel's container runs as. Specify the email address of the service account. If this service account is not specified, the container runs as a service account that doesn't have access to the resource project. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.
      */
     serviceAccount?: string | null;
+    /**
+     * The resource name of the shared DeploymentResourcePool to deploy on. Format: `projects/{project\}/locations/{location\}/deploymentResourcePools/{deployment_resource_pool\}`
+     */
+    sharedResources?: string | null;
   }
   /**
    * Points to a DeployedModel.
@@ -2092,6 +2134,54 @@ export namespace aiplatform_v1 {
      * Required. The ID of the Feature to apply the setting to.
      */
     featureId?: string | null;
+  }
+  /**
+   * Request message for PredictionService.DirectPredict.
+   */
+  export interface Schema$GoogleCloudAiplatformV1DirectPredictRequest {
+    /**
+     * The prediction input.
+     */
+    inputs?: Schema$GoogleCloudAiplatformV1Tensor[];
+    /**
+     * The parameters that govern the prediction.
+     */
+    parameters?: Schema$GoogleCloudAiplatformV1Tensor;
+  }
+  /**
+   * Response message for PredictionService.DirectPredict.
+   */
+  export interface Schema$GoogleCloudAiplatformV1DirectPredictResponse {
+    /**
+     * The prediction output.
+     */
+    outputs?: Schema$GoogleCloudAiplatformV1Tensor[];
+    /**
+     * The parameters that govern the prediction.
+     */
+    parameters?: Schema$GoogleCloudAiplatformV1Tensor;
+  }
+  /**
+   * Request message for PredictionService.DirectRawPredict.
+   */
+  export interface Schema$GoogleCloudAiplatformV1DirectRawPredictRequest {
+    /**
+     * The prediction input.
+     */
+    input?: string | null;
+    /**
+     * Fully qualified name of the API method being invoked to perform predictions. Format: `/namespace.Service/Method/` Example: `/tensorflow.serving.PredictionService/Predict`
+     */
+    methodName?: string | null;
+  }
+  /**
+   * Response message for PredictionService.DirectRawPredict.
+   */
+  export interface Schema$GoogleCloudAiplatformV1DirectRawPredictResponse {
+    /**
+     * The prediction output.
+     */
+    output?: string | null;
   }
   /**
    * Represents the spec of disk options.
@@ -2764,9 +2854,21 @@ export namespace aiplatform_v1 {
    */
   export interface Schema$GoogleCloudAiplatformV1ExportDataConfig {
     /**
+     * Only used for custom training data export use cases. Only applicable to Datasets that have DataItems and Annotations. Cloud Storage URI that points to a YAML file describing the annotation schema. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#schemaObject). The schema files that can be used here are found in gs://google-cloud-aiplatform/schema/dataset/annotation/, note that the chosen schema must be consistent with metadata of the Dataset specified by dataset_id. Only Annotations that both match this schema and belong to DataItems not ignored by the split method are used in respectively training, validation or test role, depending on the role of the DataItem they are on. When used in conjunction with annotations_filter, the Annotations used for training are filtered by both annotations_filter and annotation_schema_uri.
+     */
+    annotationSchemaUri?: string | null;
+    /**
      * An expression for filtering what part of the Dataset is to be exported. Only Annotations that match this filter will be exported. The filter syntax is the same as in ListAnnotations.
      */
     annotationsFilter?: string | null;
+    /**
+     * Indicates the usage of the exported files.
+     */
+    exportUse?: string | null;
+    /**
+     * Split based on the provided filters for each set.
+     */
+    filterSplit?: Schema$GoogleCloudAiplatformV1ExportFilterSplit;
     /**
      * Split based on fractions defining the size of each set.
      */
@@ -2775,6 +2877,10 @@ export namespace aiplatform_v1 {
      * The Google Cloud Storage location where the output is to be written to. In the given directory a new directory will be created with name: `export-data--` where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. All export output will be written into that directory. Inside that directory, annotations with the same schema will be grouped into sub directories which are named with the corresponding annotations' schema title. Inside these sub directories, a schema.yaml will be created to describe the output format.
      */
     gcsDestination?: Schema$GoogleCloudAiplatformV1GcsDestination;
+    /**
+     * Only used for custom training data export use cases. Only applicable to Datasets that have SavedQueries. The ID of a SavedQuery (annotation set) under the Dataset specified by dataset_id used for filtering Annotations for training. Only Annotations that are associated with this SavedQuery are used in respectively training. When used in conjunction with annotations_filter, the Annotations used for training are filtered by both saved_query_id and annotations_filter. Only one of saved_query_id and annotation_schema_uri should be specified as both of them represent the same thing: problem type.
+     */
+    savedQueryId?: string | null;
   }
   /**
    * Runtime operation information for DatasetService.ExportData.
@@ -2803,7 +2909,11 @@ export namespace aiplatform_v1 {
    */
   export interface Schema$GoogleCloudAiplatformV1ExportDataResponse {
     /**
-     * All of the files that are exported in this export operation.
+     * Only present for custom code training export use case. Records data stats, i.e., train/validation/test item/annotation counts calculated during the export operation.
+     */
+    dataStats?: Schema$GoogleCloudAiplatformV1ModelDataStats;
+    /**
+     * All of the files that are exported in this export operation. For custom code training export, only three (training, validation and test) GCS paths in wildcard format are populated (e.g., gs://.../training-*).
      */
     exportedFiles?: string[] | null;
   }
@@ -2871,6 +2981,23 @@ export namespace aiplatform_v1 {
    * Response message for FeaturestoreService.ExportFeatureValues.
    */
   export interface Schema$GoogleCloudAiplatformV1ExportFeatureValuesResponse {}
+  /**
+   * Assigns input data to training, validation, and test sets based on the given filters, data pieces not matched by any filter are ignored. Currently only supported for Datasets containing DataItems. If any of the filters in this message are to match nothing, then they can be set as '-' (the minus sign). Supported only for unstructured Datasets.
+   */
+  export interface Schema$GoogleCloudAiplatformV1ExportFilterSplit {
+    /**
+     * Required. A filter on DataItems of the Dataset. DataItems that match this filter are used to test the Model. A filter with same syntax as the one used in DatasetService.ListDataItems may be used. If a single DataItem is matched by more than one of the FilterSplit filters, then it is assigned to the first set that applies to it in the training, validation, test order.
+     */
+    testFilter?: string | null;
+    /**
+     * Required. A filter on DataItems of the Dataset. DataItems that match this filter are used to train the Model. A filter with same syntax as the one used in DatasetService.ListDataItems may be used. If a single DataItem is matched by more than one of the FilterSplit filters, then it is assigned to the first set that applies to it in the training, validation, test order.
+     */
+    trainingFilter?: string | null;
+    /**
+     * Required. A filter on DataItems of the Dataset. DataItems that match this filter are used to validate the Model. A filter with same syntax as the one used in DatasetService.ListDataItems may be used. If a single DataItem is matched by more than one of the FilterSplit filters, then it is assigned to the first set that applies to it in the training, validation, test order.
+     */
+    validationFilter?: string | null;
+  }
   /**
    * Assigns the input data to training, validation, and test sets as per the given fractions. Any of `training_fraction`, `validation_fraction` and `test_fraction` may optionally be provided, they must sum to up to 1. If the provided ones sum to less than 1, the remainder is assigned to sets as decided by Vertex AI. If none of the fractions are set, by default roughly 80% of data is used for training, 10% for validation, and 10% for test.
    */
@@ -3048,7 +3175,7 @@ export namespace aiplatform_v1 {
      */
     labels?: {[key: string]: string} | null;
     /**
-     * Output only. Name of the FeatureGroup. Format: `projects/{project\}/locations/{location\}/featureGroups/{featureGroup\}`
+     * Identifier. Name of the FeatureGroup. Format: `projects/{project\}/locations/{location\}/featureGroups/{featureGroup\}`
      */
     name?: string | null;
     /**
@@ -3125,7 +3252,7 @@ export namespace aiplatform_v1 {
      */
     labels?: {[key: string]: string} | null;
     /**
-     * Output only. Name of the FeatureOnlineStore. Format: `projects/{project\}/locations/{location\}/featureOnlineStores/{featureOnlineStore\}`
+     * Identifier. Name of the FeatureOnlineStore. Format: `projects/{project\}/locations/{location\}/featureOnlineStores/{featureOnlineStore\}`
      */
     name?: string | null;
     /**
@@ -3435,7 +3562,7 @@ export namespace aiplatform_v1 {
      */
     labels?: {[key: string]: string} | null;
     /**
-     * Output only. Name of the FeatureView. Format: `projects/{project\}/locations/{location\}/featureOnlineStores/{feature_online_store\}/featureViews/{feature_view\}`
+     * Identifier. Name of the FeatureView. Format: `projects/{project\}/locations/{location\}/featureOnlineStores/{feature_online_store\}/featureViews/{feature_view\}`
      */
     name?: string | null;
     /**
@@ -3501,7 +3628,7 @@ export namespace aiplatform_v1 {
      */
     finalStatus?: Schema$GoogleRpcStatus;
     /**
-     * Output only. Name of the FeatureViewSync. Format: `projects/{project\}/locations/{location\}/featureOnlineStores/{feature_online_store\}/featureViews/{feature_view\}/featureViewSyncs/{feature_view_sync\}`
+     * Identifier. Name of the FeatureViewSync. Format: `projects/{project\}/locations/{location\}/featureOnlineStores/{feature_online_store\}/featureViews/{feature_view\}/featureViewSyncs/{feature_view_sync\}`
      */
     name?: string | null;
     /**
@@ -3509,6 +3636,9 @@ export namespace aiplatform_v1 {
      */
     runTime?: Schema$GoogleTypeInterval;
   }
+  /**
+   * Configuration for Sync. Only one option is set.
+   */
   export interface Schema$GoogleCloudAiplatformV1FeatureViewSyncConfig {
     /**
      * Cron schedule (https://en.wikipedia.org/wiki/Cron) to launch scheduled runs. To explicitly set a timezone to the cron tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE\}" or "TZ=${IANA_TIME_ZONE\}". The ${IANA_TIME_ZONE\} may only be a valid string from IANA time zone database. For example, "CRON_TZ=America/New_York 1 * * * *", or "TZ=America/New_York 1 * * * *".
@@ -3562,6 +3692,19 @@ export namespace aiplatform_v1 {
      * Feature value.
      */
     value?: Schema$GoogleCloudAiplatformV1FeatureValue;
+  }
+  /**
+   * URI based data.
+   */
+  export interface Schema$GoogleCloudAiplatformV1FileData {
+    /**
+     * Required. URI.
+     */
+    fileUri?: string | null;
+    /**
+     * Required. Mime type of the data.
+     */
+    mimeType?: string | null;
   }
   /**
    * Assigns input data to training, validation, and test sets based on the given filters, data pieces not matched by any filter are ignored. Currently only supported for Datasets containing DataItems. If any of the filters in this message are to match nothing, then they can be set as '-' (the minus sign). Supported only for unstructured Datasets.
@@ -3673,6 +3816,32 @@ export namespace aiplatform_v1 {
      * The fraction of the input data that is to be used to validate the Model.
      */
     validationFraction?: number | null;
+  }
+  /**
+   * A predicted [FunctionCall] returned from the model that contains a string representing the [FunctionDeclaration.name] and a structured JSON object containing the parameters and their values.
+   */
+  export interface Schema$GoogleCloudAiplatformV1FunctionCall {
+    /**
+     * Optional. Required. The function parameters and values in JSON object format. See [FunctionDeclaration.parameters] for parameter details.
+     */
+    args?: {[key: string]: any} | null;
+    /**
+     * Required. The name of the function to call. Matches [FunctionDeclaration.name].
+     */
+    name?: string | null;
+  }
+  /**
+   * The result output from a [FunctionCall] that contains a string representing the [FunctionDeclaration.name] and a structured JSON object containing any output from the function is used as context to the model. This should contain the result of a [FunctionCall] made based on model prediction.
+   */
+  export interface Schema$GoogleCloudAiplatformV1FunctionResponse {
+    /**
+     * Required. The name of the function to call. Matches [FunctionDeclaration.name] and [FunctionCall.name].
+     */
+    name?: string | null;
+    /**
+     * Required. The function response in JSON object format.
+     */
+    response?: {[key: string]: any} | null;
   }
   /**
    * The Google Cloud Storage location where the output is to be written to.
@@ -5219,6 +5388,10 @@ export namespace aiplatform_v1 {
      */
     createTime?: string | null;
     /**
+     * Stats of data used for training or evaluating the Model. Only populated when the Model is trained by a TrainingPipeline with data_input_config.
+     */
+    dataStats?: Schema$GoogleCloudAiplatformV1ModelDataStats;
+    /**
      * Output only. The pointers to DeployedModels created from this Model. Note that Model could have been deployed to Endpoints in different Locations.
      */
     deployedModels?: Schema$GoogleCloudAiplatformV1DeployedModelRef[];
@@ -5336,7 +5509,7 @@ export namespace aiplatform_v1 {
      */
     command?: string[] | null;
     /**
-     * Immutable. Deployment timeout. TODO (b/306244185): Revise documentation before exposing.
+     * Immutable. Deployment timeout. Limit for deployment timeout is 2 hours.
      */
     deploymentTimeout?: string | null;
     /**
@@ -5344,7 +5517,11 @@ export namespace aiplatform_v1 {
      */
     env?: Schema$GoogleCloudAiplatformV1EnvVar[];
     /**
-     * Immutable. Specification for Kubernetes readiness probe. TODO (b/306244185): Revise documentation before exposing.
+     * Immutable. List of ports to expose from the container. Vertex AI sends gRPC prediction requests that it receives to the first port on this list. Vertex AI also sends liveness and health checks to this port. If you do not specify this field, gRPC requests to the container will be disabled. Vertex AI does not use ports other than the first one listed. This field corresponds to the `ports` field of the Kubernetes Containers v1 core API.
+     */
+    grpcPorts?: Schema$GoogleCloudAiplatformV1Port[];
+    /**
+     * Immutable. Specification for Kubernetes readiness probe.
      */
     healthProbe?: Schema$GoogleCloudAiplatformV1Probe;
     /**
@@ -5364,13 +5541,42 @@ export namespace aiplatform_v1 {
      */
     predictRoute?: string | null;
     /**
-     * Immutable. The amount of the VM memory to reserve as the shared memory for the model in megabytes. TODO (b/306244185): Revise documentation before exposing.
+     * Immutable. The amount of the VM memory to reserve as the shared memory for the model in megabytes.
      */
     sharedMemorySizeMb?: string | null;
     /**
-     * Immutable. Specification for Kubernetes startup probe. TODO (b/306244185): Revise documentation before exposing.
+     * Immutable. Specification for Kubernetes startup probe.
      */
     startupProbe?: Schema$GoogleCloudAiplatformV1Probe;
+  }
+  /**
+   * Stats of data used for train or evaluate the Model.
+   */
+  export interface Schema$GoogleCloudAiplatformV1ModelDataStats {
+    /**
+     * Number of Annotations that are used for evaluating this Model. If the Model is evaluated multiple times, this will be the number of test Annotations used by the first evaluation. If the Model is not evaluated, the number is 0.
+     */
+    testAnnotationsCount?: string | null;
+    /**
+     * Number of DataItems that were used for evaluating this Model. If the Model is evaluated multiple times, this will be the number of test DataItems used by the first evaluation. If the Model is not evaluated, the number is 0.
+     */
+    testDataItemsCount?: string | null;
+    /**
+     * Number of Annotations that are used for training this Model.
+     */
+    trainingAnnotationsCount?: string | null;
+    /**
+     * Number of DataItems that were used for training this Model.
+     */
+    trainingDataItemsCount?: string | null;
+    /**
+     * Number of Annotations that are used for validating this Model during training.
+     */
+    validationAnnotationsCount?: string | null;
+    /**
+     * Number of DataItems that were used for validating this Model during training.
+     */
+    validationDataItemsCount?: string | null;
   }
   /**
    * ModelDeploymentMonitoringBigQueryTable specifies the BigQuery table name as well as some information of the logs stored in this table.
@@ -6448,6 +6654,35 @@ export namespace aiplatform_v1 {
      * Immutable. A resource name of the NotebookRuntimeTemplate.
      */
     notebookRuntimeTemplate?: string | null;
+  }
+  /**
+   * Content part.
+   */
+  export interface Schema$GoogleCloudAiplatformV1Part {
+    /**
+     * Optional. URI based data.
+     */
+    fileData?: Schema$GoogleCloudAiplatformV1FileData;
+    /**
+     * Optional. A predicted [FunctionCall] returned from the model that contains a string representing the [FunctionDeclaration.name] with the parameters and their values.
+     */
+    functionCall?: Schema$GoogleCloudAiplatformV1FunctionCall;
+    /**
+     * Optional. The result output of a [FunctionCall] that contains a string representing the [FunctionDeclaration.name] and a structured JSON object containing any output from the function call. It is used as context to the model.
+     */
+    functionResponse?: Schema$GoogleCloudAiplatformV1FunctionResponse;
+    /**
+     * Optional. Inlined bytes data.
+     */
+    inlineData?: Schema$GoogleCloudAiplatformV1Blob;
+    /**
+     * Optional. Text part (can be code).
+     */
+    text?: string | null;
+    /**
+     * Optional. Video metadata. The metadata should only be specified while the video data is presented in inline_data or file_data.
+     */
+    videoMetadata?: Schema$GoogleCloudAiplatformV1VideoMetadata;
   }
   /**
    * Request message for JobService.PauseModelDeploymentMonitoringJob.
@@ -8542,6 +8777,10 @@ export namespace aiplatform_v1 {
      */
     enterpriseDatastore?: string | null;
     /**
+     * The grounding text passed inline with the Predict API. It can support up to 1 million token context.
+     */
+    inlineContext?: string | null;
+    /**
      * The type of the grounding checking source.
      */
     type?: string | null;
@@ -9000,6 +9239,10 @@ export namespace aiplatform_v1 {
      * Value of the maximum number of tokens generated set when the dataset was saved.
      */
     maxOutputTokens?: string | null;
+    /**
+     * User-created prompt note. Note size limit is 2KB.
+     */
+    note?: string | null;
     /**
      * Type of the prompt dataset.
      */
@@ -11571,6 +11814,23 @@ export namespace aiplatform_v1 {
     genericMetadata?: Schema$GoogleCloudAiplatformV1GenericOperationMetadata;
   }
   /**
+   * Metadata information for NotebookService.UpgradeNotebookRuntime.
+   */
+  export interface Schema$GoogleCloudAiplatformV1UpgradeNotebookRuntimeOperationMetadata {
+    /**
+     * The operation generic information.
+     */
+    genericMetadata?: Schema$GoogleCloudAiplatformV1GenericOperationMetadata;
+    /**
+     * A human-readable message that shows the intermediate progress details of NotebookRuntime.
+     */
+    progressMessage?: string | null;
+  }
+  /**
+   * Request message for NotebookService.UpgradeNotebookRuntime.
+   */
+  export interface Schema$GoogleCloudAiplatformV1UpgradeNotebookRuntimeRequest {}
+  /**
    * Details of ModelService.UploadModel operation.
    */
   export interface Schema$GoogleCloudAiplatformV1UploadModelOperationMetadata {
@@ -11659,6 +11919,19 @@ export namespace aiplatform_v1 {
      * A string value.
      */
     stringValue?: string | null;
+  }
+  /**
+   * Metadata describes the input video content.
+   */
+  export interface Schema$GoogleCloudAiplatformV1VideoMetadata {
+    /**
+     * Optional. The end offset of the video.
+     */
+    endOffset?: string | null;
+    /**
+     * Optional. The start offset of the video.
+     */
+    startOffset?: string | null;
   }
   /**
    * Represents the spec of a worker pool in a job.
@@ -21181,6 +21454,200 @@ export namespace aiplatform_v1 {
     }
 
     /**
+     * Perform an unary online prediction request for Vertex first-party products and frameworks.
+     *
+     * @param params - Parameters for request
+     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
+     * @param callback - Optional callback that handles the response.
+     * @returns A promise if used with async/await, or void if used with a callback.
+     */
+    directPredict(
+      params: Params$Resource$Projects$Locations$Endpoints$Directpredict,
+      options: StreamMethodOptions
+    ): GaxiosPromise<Readable>;
+    directPredict(
+      params?: Params$Resource$Projects$Locations$Endpoints$Directpredict,
+      options?: MethodOptions
+    ): GaxiosPromise<Schema$GoogleCloudAiplatformV1DirectPredictResponse>;
+    directPredict(
+      params: Params$Resource$Projects$Locations$Endpoints$Directpredict,
+      options: StreamMethodOptions | BodyResponseCallback<Readable>,
+      callback: BodyResponseCallback<Readable>
+    ): void;
+    directPredict(
+      params: Params$Resource$Projects$Locations$Endpoints$Directpredict,
+      options:
+        | MethodOptions
+        | BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectPredictResponse>,
+      callback: BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectPredictResponse>
+    ): void;
+    directPredict(
+      params: Params$Resource$Projects$Locations$Endpoints$Directpredict,
+      callback: BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectPredictResponse>
+    ): void;
+    directPredict(
+      callback: BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectPredictResponse>
+    ): void;
+    directPredict(
+      paramsOrCallback?:
+        | Params$Resource$Projects$Locations$Endpoints$Directpredict
+        | BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectPredictResponse>
+        | BodyResponseCallback<Readable>,
+      optionsOrCallback?:
+        | MethodOptions
+        | StreamMethodOptions
+        | BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectPredictResponse>
+        | BodyResponseCallback<Readable>,
+      callback?:
+        | BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectPredictResponse>
+        | BodyResponseCallback<Readable>
+    ):
+      | void
+      | GaxiosPromise<Schema$GoogleCloudAiplatformV1DirectPredictResponse>
+      | GaxiosPromise<Readable> {
+      let params = (paramsOrCallback ||
+        {}) as Params$Resource$Projects$Locations$Endpoints$Directpredict;
+      let options = (optionsOrCallback || {}) as MethodOptions;
+
+      if (typeof paramsOrCallback === 'function') {
+        callback = paramsOrCallback;
+        params =
+          {} as Params$Resource$Projects$Locations$Endpoints$Directpredict;
+        options = {};
+      }
+
+      if (typeof optionsOrCallback === 'function') {
+        callback = optionsOrCallback;
+        options = {};
+      }
+
+      const rootUrl = options.rootUrl || 'https://aiplatform.googleapis.com/';
+      const parameters = {
+        options: Object.assign(
+          {
+            url: (rootUrl + '/v1/{+endpoint}:directPredict').replace(
+              /([^:]\/)\/+/g,
+              '$1'
+            ),
+            method: 'POST',
+          },
+          options
+        ),
+        params,
+        requiredParams: ['endpoint'],
+        pathParams: ['endpoint'],
+        context: this.context,
+      };
+      if (callback) {
+        createAPIRequest<Schema$GoogleCloudAiplatformV1DirectPredictResponse>(
+          parameters,
+          callback as BodyResponseCallback<unknown>
+        );
+      } else {
+        return createAPIRequest<Schema$GoogleCloudAiplatformV1DirectPredictResponse>(
+          parameters
+        );
+      }
+    }
+
+    /**
+     * Perform an online prediction request through gRPC.
+     *
+     * @param params - Parameters for request
+     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
+     * @param callback - Optional callback that handles the response.
+     * @returns A promise if used with async/await, or void if used with a callback.
+     */
+    directRawPredict(
+      params: Params$Resource$Projects$Locations$Endpoints$Directrawpredict,
+      options: StreamMethodOptions
+    ): GaxiosPromise<Readable>;
+    directRawPredict(
+      params?: Params$Resource$Projects$Locations$Endpoints$Directrawpredict,
+      options?: MethodOptions
+    ): GaxiosPromise<Schema$GoogleCloudAiplatformV1DirectRawPredictResponse>;
+    directRawPredict(
+      params: Params$Resource$Projects$Locations$Endpoints$Directrawpredict,
+      options: StreamMethodOptions | BodyResponseCallback<Readable>,
+      callback: BodyResponseCallback<Readable>
+    ): void;
+    directRawPredict(
+      params: Params$Resource$Projects$Locations$Endpoints$Directrawpredict,
+      options:
+        | MethodOptions
+        | BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectRawPredictResponse>,
+      callback: BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectRawPredictResponse>
+    ): void;
+    directRawPredict(
+      params: Params$Resource$Projects$Locations$Endpoints$Directrawpredict,
+      callback: BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectRawPredictResponse>
+    ): void;
+    directRawPredict(
+      callback: BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectRawPredictResponse>
+    ): void;
+    directRawPredict(
+      paramsOrCallback?:
+        | Params$Resource$Projects$Locations$Endpoints$Directrawpredict
+        | BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectRawPredictResponse>
+        | BodyResponseCallback<Readable>,
+      optionsOrCallback?:
+        | MethodOptions
+        | StreamMethodOptions
+        | BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectRawPredictResponse>
+        | BodyResponseCallback<Readable>,
+      callback?:
+        | BodyResponseCallback<Schema$GoogleCloudAiplatformV1DirectRawPredictResponse>
+        | BodyResponseCallback<Readable>
+    ):
+      | void
+      | GaxiosPromise<Schema$GoogleCloudAiplatformV1DirectRawPredictResponse>
+      | GaxiosPromise<Readable> {
+      let params = (paramsOrCallback ||
+        {}) as Params$Resource$Projects$Locations$Endpoints$Directrawpredict;
+      let options = (optionsOrCallback || {}) as MethodOptions;
+
+      if (typeof paramsOrCallback === 'function') {
+        callback = paramsOrCallback;
+        params =
+          {} as Params$Resource$Projects$Locations$Endpoints$Directrawpredict;
+        options = {};
+      }
+
+      if (typeof optionsOrCallback === 'function') {
+        callback = optionsOrCallback;
+        options = {};
+      }
+
+      const rootUrl = options.rootUrl || 'https://aiplatform.googleapis.com/';
+      const parameters = {
+        options: Object.assign(
+          {
+            url: (rootUrl + '/v1/{+endpoint}:directRawPredict').replace(
+              /([^:]\/)\/+/g,
+              '$1'
+            ),
+            method: 'POST',
+          },
+          options
+        ),
+        params,
+        requiredParams: ['endpoint'],
+        pathParams: ['endpoint'],
+        context: this.context,
+      };
+      if (callback) {
+        createAPIRequest<Schema$GoogleCloudAiplatformV1DirectRawPredictResponse>(
+          parameters,
+          callback as BodyResponseCallback<unknown>
+        );
+      } else {
+        return createAPIRequest<Schema$GoogleCloudAiplatformV1DirectRawPredictResponse>(
+          parameters
+        );
+      }
+    }
+
+    /**
      * Perform an online explanation. If deployed_model_id is specified, the corresponding DeployModel must have explanation_spec populated. If deployed_model_id is not specified, all DeployedModels must have explanation_spec populated.
      *
      * @param params - Parameters for request
@@ -22090,6 +22557,30 @@ export namespace aiplatform_v1 {
      * Request body metadata
      */
     requestBody?: Schema$GoogleCloudAiplatformV1DeployModelRequest;
+  }
+  export interface Params$Resource$Projects$Locations$Endpoints$Directpredict
+    extends StandardParameters {
+    /**
+     * Required. The name of the Endpoint requested to serve the prediction. Format: `projects/{project\}/locations/{location\}/endpoints/{endpoint\}`
+     */
+    endpoint?: string;
+
+    /**
+     * Request body metadata
+     */
+    requestBody?: Schema$GoogleCloudAiplatformV1DirectPredictRequest;
+  }
+  export interface Params$Resource$Projects$Locations$Endpoints$Directrawpredict
+    extends StandardParameters {
+    /**
+     * Required. The name of the Endpoint requested to serve the prediction. Format: `projects/{project\}/locations/{location\}/endpoints/{endpoint\}`
+     */
+    endpoint?: string;
+
+    /**
+     * Request body metadata
+     */
+    requestBody?: Schema$GoogleCloudAiplatformV1DirectRawPredictRequest;
   }
   export interface Params$Resource$Projects$Locations$Endpoints$Explain
     extends StandardParameters {
@@ -23269,7 +23760,7 @@ export namespace aiplatform_v1 {
   export interface Params$Resource$Projects$Locations$Featuregroups$Patch
     extends StandardParameters {
     /**
-     * Output only. Name of the FeatureGroup. Format: `projects/{project\}/locations/{location\}/featureGroups/{featureGroup\}`
+     * Identifier. Name of the FeatureGroup. Format: `projects/{project\}/locations/{location\}/featureGroups/{featureGroup\}`
      */
     name?: string;
     /**
@@ -23814,7 +24305,7 @@ export namespace aiplatform_v1 {
      */
     pageSize?: number;
     /**
-     * A page token, received from a previous FeaturestoreService.ListFeatures call or FeatureRegistryService.ListFeatures call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to FeaturestoreService.ListFeatures or or FeatureRegistryService.ListFeatures must match the call that provided the page token.
+     * A page token, received from a previous FeaturestoreService.ListFeatures call or FeatureRegistryService.ListFeatures call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to FeaturestoreService.ListFeatures or FeatureRegistryService.ListFeatures must match the call that provided the page token.
      */
     pageToken?: string;
     /**
@@ -25226,7 +25717,7 @@ export namespace aiplatform_v1 {
   export interface Params$Resource$Projects$Locations$Featureonlinestores$Patch
     extends StandardParameters {
     /**
-     * Output only. Name of the FeatureOnlineStore. Format: `projects/{project\}/locations/{location\}/featureOnlineStores/{featureOnlineStore\}`
+     * Identifier. Name of the FeatureOnlineStore. Format: `projects/{project\}/locations/{location\}/featureOnlineStores/{featureOnlineStore\}`
      */
     name?: string;
     /**
@@ -25993,7 +26484,7 @@ export namespace aiplatform_v1 {
   export interface Params$Resource$Projects$Locations$Featureonlinestores$Featureviews$Patch
     extends StandardParameters {
     /**
-     * Output only. Name of the FeatureView. Format: `projects/{project\}/locations/{location\}/featureOnlineStores/{feature_online_store\}/featureViews/{feature_view\}`
+     * Identifier. Name of the FeatureView. Format: `projects/{project\}/locations/{location\}/featureOnlineStores/{feature_online_store\}/featureViews/{feature_view\}`
      */
     name?: string;
     /**
@@ -30349,7 +30840,7 @@ export namespace aiplatform_v1 {
      */
     pageSize?: number;
     /**
-     * A page token, received from a previous FeaturestoreService.ListFeatures call or FeatureRegistryService.ListFeatures call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to FeaturestoreService.ListFeatures or or FeatureRegistryService.ListFeatures must match the call that provided the page token.
+     * A page token, received from a previous FeaturestoreService.ListFeatures call or FeatureRegistryService.ListFeatures call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to FeaturestoreService.ListFeatures or FeatureRegistryService.ListFeatures must match the call that provided the page token.
      */
     pageToken?: string;
     /**
@@ -45660,6 +46151,101 @@ export namespace aiplatform_v1 {
         return createAPIRequest<Schema$GoogleLongrunningOperation>(parameters);
       }
     }
+
+    /**
+     * Upgrades a NotebookRuntime.
+     *
+     * @param params - Parameters for request
+     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
+     * @param callback - Optional callback that handles the response.
+     * @returns A promise if used with async/await, or void if used with a callback.
+     */
+    upgrade(
+      params: Params$Resource$Projects$Locations$Notebookruntimes$Upgrade,
+      options: StreamMethodOptions
+    ): GaxiosPromise<Readable>;
+    upgrade(
+      params?: Params$Resource$Projects$Locations$Notebookruntimes$Upgrade,
+      options?: MethodOptions
+    ): GaxiosPromise<Schema$GoogleLongrunningOperation>;
+    upgrade(
+      params: Params$Resource$Projects$Locations$Notebookruntimes$Upgrade,
+      options: StreamMethodOptions | BodyResponseCallback<Readable>,
+      callback: BodyResponseCallback<Readable>
+    ): void;
+    upgrade(
+      params: Params$Resource$Projects$Locations$Notebookruntimes$Upgrade,
+      options:
+        | MethodOptions
+        | BodyResponseCallback<Schema$GoogleLongrunningOperation>,
+      callback: BodyResponseCallback<Schema$GoogleLongrunningOperation>
+    ): void;
+    upgrade(
+      params: Params$Resource$Projects$Locations$Notebookruntimes$Upgrade,
+      callback: BodyResponseCallback<Schema$GoogleLongrunningOperation>
+    ): void;
+    upgrade(
+      callback: BodyResponseCallback<Schema$GoogleLongrunningOperation>
+    ): void;
+    upgrade(
+      paramsOrCallback?:
+        | Params$Resource$Projects$Locations$Notebookruntimes$Upgrade
+        | BodyResponseCallback<Schema$GoogleLongrunningOperation>
+        | BodyResponseCallback<Readable>,
+      optionsOrCallback?:
+        | MethodOptions
+        | StreamMethodOptions
+        | BodyResponseCallback<Schema$GoogleLongrunningOperation>
+        | BodyResponseCallback<Readable>,
+      callback?:
+        | BodyResponseCallback<Schema$GoogleLongrunningOperation>
+        | BodyResponseCallback<Readable>
+    ):
+      | void
+      | GaxiosPromise<Schema$GoogleLongrunningOperation>
+      | GaxiosPromise<Readable> {
+      let params = (paramsOrCallback ||
+        {}) as Params$Resource$Projects$Locations$Notebookruntimes$Upgrade;
+      let options = (optionsOrCallback || {}) as MethodOptions;
+
+      if (typeof paramsOrCallback === 'function') {
+        callback = paramsOrCallback;
+        params =
+          {} as Params$Resource$Projects$Locations$Notebookruntimes$Upgrade;
+        options = {};
+      }
+
+      if (typeof optionsOrCallback === 'function') {
+        callback = optionsOrCallback;
+        options = {};
+      }
+
+      const rootUrl = options.rootUrl || 'https://aiplatform.googleapis.com/';
+      const parameters = {
+        options: Object.assign(
+          {
+            url: (rootUrl + '/v1/{+name}:upgrade').replace(
+              /([^:]\/)\/+/g,
+              '$1'
+            ),
+            method: 'POST',
+          },
+          options
+        ),
+        params,
+        requiredParams: ['name'],
+        pathParams: ['name'],
+        context: this.context,
+      };
+      if (callback) {
+        createAPIRequest<Schema$GoogleLongrunningOperation>(
+          parameters,
+          callback as BodyResponseCallback<unknown>
+        );
+      } else {
+        return createAPIRequest<Schema$GoogleLongrunningOperation>(parameters);
+      }
+    }
   }
 
   export interface Params$Resource$Projects$Locations$Notebookruntimes$Assign
@@ -45726,6 +46312,18 @@ export namespace aiplatform_v1 {
      * Request body metadata
      */
     requestBody?: Schema$GoogleCloudAiplatformV1StartNotebookRuntimeRequest;
+  }
+  export interface Params$Resource$Projects$Locations$Notebookruntimes$Upgrade
+    extends StandardParameters {
+    /**
+     * Required. The name of the NotebookRuntime resource to be upgrade. Instead of checking whether the name is in valid NotebookRuntime resource name format, directly throw NotFound exception if there is no such NotebookRuntime in spanner.
+     */
+    name?: string;
+
+    /**
+     * Request body metadata
+     */
+    requestBody?: Schema$GoogleCloudAiplatformV1UpgradeNotebookRuntimeRequest;
   }
 
   export class Resource$Projects$Locations$Notebookruntimetemplates {
