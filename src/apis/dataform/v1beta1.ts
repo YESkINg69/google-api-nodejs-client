@@ -8022,7 +8022,7 @@ export namespace dataform_v1beta1 {
   export interface Params$Resource$Projects$Locations$Repositories$Workspaces$Searchfiles
     extends StandardParameters {
     /**
-     * Optional. Optional filter for the returned list in go/filtering format. Filtering is only currently supported on the `path` field.
+     * Optional. Optional filter for the returned list in filtering format. Filtering is only currently supported on the `path` field. See https://google.aip.dev/160 for details.
      */
     filter?: string;
     /**
