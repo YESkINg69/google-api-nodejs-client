@@ -144,13 +144,17 @@ export namespace chat_v1 {
    */
   export interface Schema$ActionResponse {
     /**
-     * Input only. A response to an event related to a [dialog](https://developers.google.com/chat/how-tos/dialogs). Must be accompanied by `ResponseType.Dialog`.
+     * Input only. A response to an interaction event related to a [dialog](https://developers.google.com/chat/how-tos/dialogs). Must be accompanied by `ResponseType.Dialog`.
      */
     dialogAction?: Schema$DialogAction;
     /**
      * Input only. The type of Chat app response.
      */
     type?: string | null;
+    /**
+     * Input only. The response of the updated widget.
+     */
+    updatedWidget?: Schema$UpdatedWidget;
     /**
      * Input only. URL for users to authenticate or configure. (Only for `REQUEST_CONFIG` response types.)
      */
@@ -1304,6 +1308,15 @@ export namespace chat_v1 {
     textParagraph?: Schema$GoogleAppsCardV1TextParagraph;
   }
   /**
+   * A Google Group in Google Chat.
+   */
+  export interface Schema$Group {
+    /**
+     * Resource name for a Google Group. Represents a [group](https://cloud.google.com/identity/docs/reference/rest/v1/groups) in Cloud Identity Groups API. Format: groups/{group\}
+     */
+    name?: string | null;
+  }
+  /**
    * Chat apps only. For a `SelectionInput` widget that uses a multiselect menu, a data source from a Google Workspace application. The data source populates selection items for the multiselect menu.
    */
   export interface Schema$HostAppDataSourceMarkup {
@@ -1471,9 +1484,13 @@ export namespace chat_v1 {
    */
   export interface Schema$Membership {
     /**
-     * Output only. The creation time of the membership, such as when a member joined or was invited to join a space.
+     * Optional. Immutable. The creation time of the membership, such as when a member joined or was invited to join a space. [Developer Preview](https://developers.google.com/workspace/preview): This field is output only, except when used to import historical memberships in import mode spaces.
      */
     createTime?: string | null;
+    /**
+     * The Google Group the membership corresponds to. Only supports read operations. Other operations, like creating or updating a membership, aren't currently supported.
+     */
+    groupMember?: Schema$Group;
     /**
      * The Google Chat user or app the membership corresponds to. If your Chat app [authenticates as a user](https://developers.google.com/chat/api/guides/auth/users), the output populates the [user](https://developers.google.com/chat/api/reference/rest/v1/User) `name` and `type`.
      */
@@ -1656,6 +1673,15 @@ export namespace chat_v1 {
      * A section must contain at least one widget.
      */
     widgets?: Schema$WidgetMarkup[];
+  }
+  /**
+   * List of widget autocomplete results.
+   */
+  export interface Schema$SelectionItems {
+    /**
+     * An array of the SelectionItem objects.
+     */
+    items?: Schema$GoogleAppsCardV1SelectionItem[];
   }
   export interface Schema$SetUpSpaceRequest {
     /**
@@ -1859,6 +1885,19 @@ export namespace chat_v1 {
      * The user timezone offset, in milliseconds, from Coordinated Universal Time (UTC).
      */
     offset?: number | null;
+  }
+  /**
+   * The response of the updated widget. Used to provide autocomplete options for a widget.
+   */
+  export interface Schema$UpdatedWidget {
+    /**
+     * List of widget autocomplete results
+     */
+    suggestions?: Schema$SelectionItems;
+    /**
+     * The ID of the updated widget. The ID must match the one for the widget that triggered the update request.
+     */
+    widget?: string | null;
   }
   export interface Schema$UploadAttachmentRequest {
     /**
@@ -3218,6 +3257,10 @@ export namespace chat_v1 {
      * Required. The resource name of the space for which to fetch a membership list. Format: spaces/{space\}
      */
     parent?: string;
+    /**
+     * Optional. When `true`, also returns memberships associated with a Google Group, in addition to other types of memberships. If a filter is set, Google Group memberships that don't match the filter criteria aren't returned.
+     */
+    showGroups?: boolean;
     /**
      * Optional. When `true`, also returns memberships associated with invited members, in addition to other types of memberships. If a filter is set, invited memberships that don't match the filter criteria aren't returned. Currently requires [user authentication](https://developers.google.com/chat/api/guides/auth/users).
      */
