@@ -1251,7 +1251,7 @@ export namespace dataflow_v1b3 {
      */
     createTime?: string | null;
     /**
-     * The current state of the job. Jobs are created in the `JOB_STATE_STOPPED` state unless otherwise specified. A job in the `JOB_STATE_RUNNING` state may asynchronously enter a terminal state. After a job has reached a terminal state, no further state updates may be made. This field may be mutated by the Cloud Dataflow service; callers cannot mutate it.
+     * The current state of the job. Jobs are created in the `JOB_STATE_STOPPED` state unless otherwise specified. A job in the `JOB_STATE_RUNNING` state may asynchronously enter a terminal state. After a job has reached a terminal state, no further state updates may be made. This field might be mutated by the Dataflow service; callers cannot mutate it.
      */
     currentState?: string | null;
     /**
@@ -1267,7 +1267,7 @@ export namespace dataflow_v1b3 {
      */
     executionInfo?: Schema$JobExecutionInfo;
     /**
-     * The unique ID of this job. This field is set by the Cloud Dataflow service when the Job is created, and is immutable for the life of the job.
+     * The unique ID of this job. This field is set by the Dataflow service when the job is created, and is immutable for the life of the job.
      */
     id?: string | null;
     /**
@@ -1283,7 +1283,7 @@ export namespace dataflow_v1b3 {
      */
     location?: string | null;
     /**
-     * The user-specified Cloud Dataflow job name. Only one Job with a given name can exist in a project within one region at any given time. Jobs in different regions can have the same name. If a caller attempts to create a Job with the same name as an already-existing Job, the attempt returns the existing Job. The name must match the regular expression `[a-z]([-a-z0-9]{0,1022\}[a-z0-9])?`
+     * The user-specified Dataflow job name. Only one active job with a given name can exist in a project within one region at any given time. Jobs in different regions can have the same name. If a caller attempts to create a job with the same name as an active job that already exists, the attempt returns the existing job. The name must match the regular expression `[a-z]([-a-z0-9]{0,1022\}[a-z0-9])?`
      */
     name?: string | null;
     /**
@@ -1291,7 +1291,7 @@ export namespace dataflow_v1b3 {
      */
     pipelineDescription?: Schema$PipelineDescription;
     /**
-     * The ID of the Cloud Platform project that the job belongs to.
+     * The ID of the Google Cloud project that the job belongs to.
      */
     projectId?: string | null;
     /**
@@ -1343,7 +1343,7 @@ export namespace dataflow_v1b3 {
      */
     transformNameMapping?: {[key: string]: string} | null;
     /**
-     * The type of Cloud Dataflow job.
+     * The type of Dataflow job.
      */
     type?: string | null;
   }
@@ -2342,6 +2342,10 @@ export namespace dataflow_v1b3 {
      * The minimum number of workers to scale down to. This field is currently only supported for Streaming Engine jobs.
      */
     minNumWorkers?: number | null;
+    /**
+     * Target worker utilization, compared against the aggregate utilization of the worker pool by autoscaler, to determine upscaling and downscaling when absent other constraints such as backlog.
+     */
+    workerUtilizationHint?: number | null;
   }
   /**
    * A bug found in the Dataflow SDK.
