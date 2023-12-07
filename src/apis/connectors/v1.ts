@@ -462,6 +462,10 @@ export namespace connectors_v1 {
      */
     entities?: string[] | null;
     /**
+     * Error message for users.
+     */
+    errorMessage?: string | null;
+    /**
      * Output only. Resource name. Format: projects/{project\}/locations/{location\}/connections/{connection\}/connectionSchemaMetadata
      */
     name?: string | null;
@@ -721,10 +725,6 @@ export namespace connectors_v1 {
      */
     labels?: {[key: string]: string} | null;
     /**
-     * Output only. Launch stage.
-     */
-    launchStage?: string | null;
-    /**
      * Optional. Logo of the resource.
      */
     logo?: string | null;
@@ -766,13 +766,13 @@ export namespace connectors_v1 {
      */
     name?: string | null;
     /**
+     * Required. Service account needed for runtime plane to access Custom Connector secrets.
+     */
+    serviceAccount?: string | null;
+    /**
      * Optional. Location of the custom connector spec.
      */
     specLocation?: string | null;
-    /**
-     * Required. Type of the customConnector.
-     */
-    type?: string | null;
     /**
      * Output only. Updated time.
      */
@@ -961,10 +961,6 @@ export namespace connectors_v1 {
      */
     authConfig?: Schema$AuthConfig;
     /**
-     * Encryption key (can be either Google managed or CMEK).
-     */
-    encryptionKey?: Schema$ConfigVariable;
-    /**
      * Enrichment Enabled.
      */
     enrichmentEnabled?: boolean | null;
@@ -972,6 +968,10 @@ export namespace connectors_v1 {
      * Optional. Ingress endpoint of the event listener. This is used only when private connectivity is enabled.
      */
     eventsListenerIngressEndpoint?: string | null;
+    /**
+     * Optional. Auth details for the event listener.
+     */
+    listenerAuthConfig?: Schema$AuthConfig;
     /**
      * Optional. Private Connectivity Enabled.
      */
@@ -1017,6 +1017,10 @@ export namespace connectors_v1 {
      * Is Eventing Supported.
      */
     isEventingSupported?: boolean | null;
+    /**
+     * ListenerAuthConfigTemplates represents the auth values for the event listener.
+     */
+    listenerAuthConfigTemplates?: Schema$AuthConfigTemplate[];
     /**
      * Registration host destination config template.
      */
@@ -1547,6 +1551,19 @@ export namespace connectors_v1 {
      */
     unreachable?: string[] | null;
   }
+  /**
+   * Expected request for ListenEvent API.
+   */
+  export interface Schema$ListenEventRequest {
+    /**
+     * Optional. Request payload.
+     */
+    payload?: {[key: string]: any} | null;
+  }
+  /**
+   * Expected response for ListenEvent API.
+   */
+  export interface Schema$ListenEventResponse {}
   /**
    * Response message for ListEntityTypes API
    */
@@ -3472,6 +3489,99 @@ export namespace connectors_v1 {
     }
 
     /**
+     * ListenEvent listens to the event.
+     *
+     * @param params - Parameters for request
+     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
+     * @param callback - Optional callback that handles the response.
+     * @returns A promise if used with async/await, or void if used with a callback.
+     */
+    listenEvent(
+      params: Params$Resource$Projects$Locations$Connections$Listenevent,
+      options: StreamMethodOptions
+    ): GaxiosPromise<Readable>;
+    listenEvent(
+      params?: Params$Resource$Projects$Locations$Connections$Listenevent,
+      options?: MethodOptions
+    ): GaxiosPromise<Schema$ListenEventResponse>;
+    listenEvent(
+      params: Params$Resource$Projects$Locations$Connections$Listenevent,
+      options: StreamMethodOptions | BodyResponseCallback<Readable>,
+      callback: BodyResponseCallback<Readable>
+    ): void;
+    listenEvent(
+      params: Params$Resource$Projects$Locations$Connections$Listenevent,
+      options: MethodOptions | BodyResponseCallback<Schema$ListenEventResponse>,
+      callback: BodyResponseCallback<Schema$ListenEventResponse>
+    ): void;
+    listenEvent(
+      params: Params$Resource$Projects$Locations$Connections$Listenevent,
+      callback: BodyResponseCallback<Schema$ListenEventResponse>
+    ): void;
+    listenEvent(
+      callback: BodyResponseCallback<Schema$ListenEventResponse>
+    ): void;
+    listenEvent(
+      paramsOrCallback?:
+        | Params$Resource$Projects$Locations$Connections$Listenevent
+        | BodyResponseCallback<Schema$ListenEventResponse>
+        | BodyResponseCallback<Readable>,
+      optionsOrCallback?:
+        | MethodOptions
+        | StreamMethodOptions
+        | BodyResponseCallback<Schema$ListenEventResponse>
+        | BodyResponseCallback<Readable>,
+      callback?:
+        | BodyResponseCallback<Schema$ListenEventResponse>
+        | BodyResponseCallback<Readable>
+    ):
+      | void
+      | GaxiosPromise<Schema$ListenEventResponse>
+      | GaxiosPromise<Readable> {
+      let params = (paramsOrCallback ||
+        {}) as Params$Resource$Projects$Locations$Connections$Listenevent;
+      let options = (optionsOrCallback || {}) as MethodOptions;
+
+      if (typeof paramsOrCallback === 'function') {
+        callback = paramsOrCallback;
+        params =
+          {} as Params$Resource$Projects$Locations$Connections$Listenevent;
+        options = {};
+      }
+
+      if (typeof optionsOrCallback === 'function') {
+        callback = optionsOrCallback;
+        options = {};
+      }
+
+      const rootUrl = options.rootUrl || 'https://connectors.googleapis.com/';
+      const parameters = {
+        options: Object.assign(
+          {
+            url: (rootUrl + '/v1/{+resourcePath}:listenEvent').replace(
+              /([^:]\/)\/+/g,
+              '$1'
+            ),
+            method: 'POST',
+          },
+          options
+        ),
+        params,
+        requiredParams: ['resourcePath'],
+        pathParams: ['resourcePath'],
+        context: this.context,
+      };
+      if (callback) {
+        createAPIRequest<Schema$ListenEventResponse>(
+          parameters,
+          callback as BodyResponseCallback<unknown>
+        );
+      } else {
+        return createAPIRequest<Schema$ListenEventResponse>(parameters);
+      }
+    }
+
+    /**
      * Updates the parameters of a single Connection.
      *
      * @param params - Parameters for request
@@ -3905,6 +4015,18 @@ export namespace connectors_v1 {
      * Specifies which fields of the Connection are returned in the response. Defaults to `BASIC` view.
      */
     view?: string;
+  }
+  export interface Params$Resource$Projects$Locations$Connections$Listenevent
+    extends StandardParameters {
+    /**
+     * Required. Resource path for request.
+     */
+    resourcePath?: string;
+
+    /**
+     * Request body metadata
+     */
+    requestBody?: Schema$ListenEventRequest;
   }
   export interface Params$Resource$Projects$Locations$Connections$Patch
     extends StandardParameters {
