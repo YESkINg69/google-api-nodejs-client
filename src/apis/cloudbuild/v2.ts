@@ -1354,7 +1354,7 @@ export namespace cloudbuild_v2 {
     /**
      * Optional. StepTemplate can be used as the basis for all step containers within the Task, so that the steps inherit settings on the base container.
      */
-    stepTemplate?: Schema$StepTemplate[];
+    stepTemplate?: Schema$StepTemplate;
     /**
      * A collection of volumes that are available to mount into steps.
      */
